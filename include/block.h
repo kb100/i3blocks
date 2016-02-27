@@ -53,6 +53,11 @@
 	_(separator_block_width, 8,    PROP_I3BAR | PROP_NUMBER) \
 	_(markup,                8,    PROP_I3BAR | PROP_STRING) \
 	_(command,               1024,              PROP_STRING) \
+	_(left_click_command,    1024,              PROP_STRING) \
+	_(middle_click_command,  1024,              PROP_STRING) \
+	_(right_click_command,   1024,              PROP_STRING) \
+	_(scroll_up_command,     1024,              PROP_STRING) \
+	_(scroll_down_command,   1024,              PROP_STRING) \
 	_(interval,              8,                 PROP_STRING | PROP_NUMBER) \
 	_(signal,                8,                 PROP_NUMBER) \
 	_(label,                 32,                PROP_STRING) \
@@ -80,10 +85,15 @@ struct block {
 };
 
 /* Shortcuts to config */
-#define NAME(_block)		(_block->default_props.name)
-#define INSTANCE(_block)	(_block->default_props.instance)
-#define COMMAND(_block)		(_block->default_props.command)
-#define LABEL(_block)		(_block->default_props.label)
+#define NAME(_block)					(_block->default_props.name)
+#define INSTANCE(_block)				(_block->default_props.instance)
+#define COMMAND(_block)					(_block->default_props.command)
+#define LEFT_CLICK_COMMAND(_block)		(_block->default_props.left_click_command)
+#define MIDDLE_CLICK_COMMAND(_block)	(_block->default_props.middle_click_command)
+#define RIGHT_CLICK_COMMAND(_block)		(_block->default_props.right_click_command)
+#define SCROLL_UP_COMMAND(_block)		(_block->default_props.scroll_up_command)
+#define SCROLL_DOWN_COMMAND(_block)		(_block->default_props.scroll_down_command)
+#define LABEL(_block)					(_block->default_props.label)
 
 /* Shortcuts to update */
 #define FULL_TEXT(_block)	(_block->updated_props.full_text)

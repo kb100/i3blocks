@@ -92,14 +92,73 @@ child_redirect_write(struct block *block, int pipe[2], int fd)
 }
 
 static void
-child_exec(struct block *block)
+exec_or_exit(struct block *block, const char *command)
 {
 	static const char * const shell = "/bin/sh";
-
-	execl(shell, shell, "-c", COMMAND(block), (char *) NULL);
+	
+	execl(shell, shell, "-c", command, (char *) NULL);
 	/* Unlikely to reach this point */
-	berrorx(block, "exec(%s -c %s)", shell, COMMAND(block));
+	berrorx(block, "exec(%s -c %s)", shell, command);
 	_exit(EXIT_ERR_INTERNAL);
+}
+
+static void
+child_exec(struct block *block)
+{
+	exec_or_exit(block, COMMAND(block));
+}
+
+static void
+click_exec(struct block *block, struct click *click)
+{
+	int button = atoi(click->button);
+	const char *command;
+	switch (button) {
+
+	case LEFT_CLICK_BUTTON:
+		command = LEFT_CLICK_COMMAND(block);
+		break;
+
+	case MIDDLE_CLICK_BUTTON:
+		command = MIDDLE_CLICK_COMMAND(block);
+		break;
+
+	case RIGHT_CLICK_BUTTON:
+		command = RIGHT_CLICK_COMMAND(block);
+		break;
+
+	case SCROLL_UP_BUTTON:
+		command = SCROLL_UP_COMMAND(block);
+		break;
+
+	case SCROLL_DOWN_BUTTON:
+		command = SCROLL_DOWN_COMMAND(block);
+		break;
+	}
+	
+	if (!command || !*command) {
+		bdebug(block, "no click command for button %d, skipping", button);
+		return;
+	}
+	
+	const unsigned long now = time(NULL);
+	pid_t pid;
+
+	/* Child will be on its own */
+	signal(SIGCHLD, SIG_IGN);
+
+	pid = fork();
+	if (pid == -1) {
+		berrorx(block, "fork");
+		return;
+	}
+
+	/* Child? */
+	if (pid == 0)
+		exec_or_exit(block, command);
+	
+	/* Parent */
+	bdebug(block, "forked child %d at %ld", pid, now);
 }
 
 static void
@@ -286,6 +345,8 @@ block_spawn(struct block *block, struct click *click)
 
 	if (!click)
 		block->timestamp = now;
+	else
+		click_exec(block, click);
 
 	bdebug(block, "forked child %d at %ld", block->pid, now);
 }

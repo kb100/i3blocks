@@ -29,4 +29,10 @@ struct click {
 
 void click_parse(char *, struct click *);
 
+#define LEFT_CLICK_BUTTON   1
+#define MIDDLE_CLICK_BUTTON 2
+#define RIGHT_CLICK_BUTTON  3
+#define SCROLL_UP_BUTTON    4
+#define SCROLL_DOWN_BUTTON  5
+
 #endif /* _CLICK_H */
